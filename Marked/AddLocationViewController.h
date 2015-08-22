@@ -7,7 +7,12 @@
 //
 
 #import "ViewController.h"
+#import <MapKit/MapKit.h>
 
 @interface AddLocationViewController : ViewController
+
+@property (weak, nonatomic) IBOutlet UITextField *locationName;
+@property (weak, nonatomic) IBOutlet MKMapView *mapView;
+- (IBAction)SaveLocation:(id)sender;
 
 @end

@@ -8,10 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@interface EventsViewController : UIViewController
 
 @property (strong, nonatomic) IBOutlet UITableView *TableView;
-
+@property (nonatomic, retain) NSString * LocationId;
 
 @end
 

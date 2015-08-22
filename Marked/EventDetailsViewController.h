@@ -7,7 +7,15 @@
 //
 
 #import "ViewController.h"
+#import <MapKit/MapKit.h>
+#import <Parse/Parse.h>
 
 @interface EventDetailsViewController : ViewController
+
+@property (weak, nonatomic) IBOutlet MKMapView *mapView;
+
+@property (nonatomic, retain) PFGeoPoint * EventLocation;
+
+@property (nonatomic, retain) NSString * EventName;
 
 @end

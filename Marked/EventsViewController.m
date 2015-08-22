@@ -6,20 +6,21 @@
 //  Copyright (c) 2015 company. All rights reserved.
 //
 
-#import "ViewController.h"
+#import "EventsViewController.h"
 #import <Parse/Parse.h>
 #import "MGSwipeTableCell.h"
 #import "MGSwipeButton.h"
 #import "SVProgressHUD.h"
+#import "EventDetailsViewController.h"
 
-@interface ViewController ()<MGSwipeTableCellDelegate>
+@interface EventsViewController ()<MGSwipeTableCellDelegate>
 {
-    NSMutableArray * LocationsArr;
+    NSMutableArray * EventsArr;
 }
 
 @end
 
-@implementation ViewController
+@implementation EventsViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -29,51 +30,39 @@
     [self.TableView addSubview:refreshControl];
     [self.TableView sendSubviewToBack:refreshControl];
     
-    LocationsArr = [NSMutableArray array];
+    EventsArr = [NSMutableArray array];
 
 
-    PFQuery *query = [PFQuery queryWithClassName:@"Locations"];
+    PFQuery *query = [PFQuery queryWithClassName:@"Events"];
+    [query whereKey:@"locationId" equalTo:self.LocationId];
     [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         
         if (!error) {
-            [LocationsArr addObjectsFromArray:objects];
+            [EventsArr addObjectsFromArray:objects];
             [self.TableView reloadData];
         }
 
     }];
    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reload) name:@"refreshLocation" object:nil];
-
 }
 - (void)Refresh:(UIRefreshControl *)refreshControl{
-    LocationsArr = [NSMutableArray array];
+    EventsArr = [NSMutableArray array];
    
-    PFQuery *query = [PFQuery queryWithClassName:@"Locations"];
+    PFQuery *query = [PFQuery queryWithClassName:@"Events"];
+    [query whereKey:@"locationId" equalTo:self.LocationId];
     [query orderByDescending:@"createdAt"];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         
         if (!error) {
-            [LocationsArr addObjectsFromArray:objects];
+            [EventsArr addObjectsFromArray:objects];
             [self.TableView reloadData];
         }
          [refreshControl endRefreshing];
     }];
 
 }
-- (void)reload{
-    LocationsArr = [NSMutableArray array];
 
-    PFQuery *query = [PFQuery queryWithClassName:@"Locations"];
-    [query orderByDescending:@"createdAt"];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        
-        if (!error) {
-            [LocationsArr addObjectsFromArray:objects];
-            [self.TableView reloadData];
-        }
-    }];
-}
 - (void)viewWillDisappear:(BOOL)animated{
     [super viewWillDisappear:animated];
     [SVProgressHUD dismiss];
@@ -85,12 +74,12 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
 
-    return LocationsArr.count;
+    return EventsArr.count;
 }
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    PFObject * location = LocationsArr[indexPath.row];
+    PFObject * location = EventsArr[indexPath.row];
     
     static NSString * reuseIdentifier = @"cell";
     MGSwipeTableCell * cell = [self.TableView dequeueReusableCellWithIdentifier:reuseIdentifier];
@@ -116,10 +105,10 @@
         
             NSIndexPath * path = [self.TableView indexPathForCell:cell];
             
-            PFObject * location = LocationsArr[path.row];
+            PFObject * location = EventsArr[path.row];
             NSString *deleteID = location.objectId;
             
-            [LocationsArr removeObjectAtIndex:path.row];
+            [EventsArr removeObjectAtIndex:path.row];
             [self.TableView beginUpdates];
             [self.TableView deleteRowsAtIndexPaths:@[path] withRowAnimation:UITableViewRowAnimationLeft];
             [self.TableView endUpdates];
@@ -140,9 +129,20 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if ([[segue identifier] isEqualToString:@"EventDetails"]) {
+        NSIndexPath *indexPath=[self.TableView indexPathForSelectedRow];
+        
+        PFObject * event = EventsArr[indexPath.row];
 
+        EventDetailsViewController * eventVC = [segue destinationViewController];
+        eventVC.EventLocation = event[@"location"];
+        eventVC.EventName = event[@"name"];
+    }
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

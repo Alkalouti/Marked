@@ -1,0 +1,19 @@
+PODS:
+  - Bolts/Tasks (1.2.0)
+  - MGSwipeTableCell (1.5.1)
+  - Parse (1.8.1):
+    - Bolts/Tasks (>= 1.2.0)
+  - SVProgressHUD (1.1.3)
+
+DEPENDENCIES:
+  - MGSwipeTableCell
+  - Parse
+  - SVProgressHUD
+
+SPEC CHECKSUMS:
+  Bolts: d176cb1e0012175589e389a9db49b85e27787576
+  MGSwipeTableCell: a51fa670c01f0aa048f12af040acebf315223137
+  Parse: 2155953b1565494095d5fa5c83b3c77f2c677c09
+  SVProgressHUD: 748080e4f36e603f6c02aec292664239df5279c1
+
+COCOAPODS: 0.37.2
